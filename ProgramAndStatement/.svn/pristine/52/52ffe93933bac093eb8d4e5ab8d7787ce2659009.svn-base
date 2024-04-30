@@ -1,0 +1,15 @@
+PROGRAM TournamentBug IS
+
+    INSTRUCTION Strat IS
+        move
+        IF next-is-enemy THEN
+            infect
+        END IF
+            turnright
+    END Strat
+
+BEGIN
+    WHILE true DO
+        Strat
+    END WHILE
+END TournamentBug

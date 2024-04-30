@@ -1,0 +1,15 @@
+infect
+IF next-is-enemy THEN
+  skip
+  turnright
+  turnleft
+END IF
+IF random THEN
+  skip
+ELSE
+  move
+END IF
+WHILE next-is-friend DO
+  turnright
+END WHILE
+turnleft

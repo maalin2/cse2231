@@ -1,0 +1,46 @@
+PROGRAM Test2 IS
+
+    INSTRUCTION Walk IS
+        WHILE next-is-empty DO
+            move
+            turnleft
+        END WHILE
+    END Walk
+
+    INSTRUCTION Switch IS
+        IF random THEN
+            turnleft
+        ELSE
+            turnright
+        END IF
+    END Switch
+
+    INSTRUCTION Defense IS
+        IF next-is-enemy THEN
+            infect
+        ELSE
+            Switch
+        END IF
+    END Defense
+
+    INSTRUCTION Offense IS
+        Walk
+        IF next-is-wall THEN
+            turnleft
+        ELSE
+            IF next-is-enemy THEN
+                infect
+                Switch
+            END IF
+        END IF
+    END Offense
+
+BEGIN
+    WHILE true DO
+        IF random THEN
+            Offense
+        ELSE
+            Defense
+        END IF
+    END WHILE
+END Test2

@@ -1,0 +1,10 @@
+WHILE true DO
+    turnleft
+    turnright
+    
+    IF next-is-enemy THEN
+        infect
+    ELSE
+        skip
+    END IF
+END WHILE

@@ -1,0 +1,236 @@
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import components.map.Map;
+import components.map.Map.Pair;
+
+/**
+ * JUnit test fixture for {@code Map<String, String>}'s constructor and kernel
+ * methods.
+ *
+ * @author Mohammed Maalin
+ * @author Nur Adem
+ *
+ */
+public abstract class MapTest {
+
+    /**
+     * Invokes the appropriate {@code Map} constructor for the implementation
+     * under test and returns the result.
+     *
+     * @return the new map
+     * @ensures constructorTest = {}
+     */
+    protected abstract Map<String, String> constructorTest();
+
+    /**
+     * Invokes the appropriate {@code Map} constructor for the reference
+     * implementation and returns the result.
+     *
+     * @return the new map
+     * @ensures constructorRef = {}
+     */
+    protected abstract Map<String, String> constructorRef();
+
+    /**
+     *
+     * Creates and returns a {@code Map<String, String>} of the implementation
+     * under test type with the given entries.
+     *
+     * @param args
+     *            the (key, value) pairs for the map
+     * @return the constructed map
+     * @requires <pre>
+     * [args.length is even]  and
+     * [the 'key' entries in args are unique]
+     * </pre>
+     * @ensures createFromArgsTest = [pairs in args]
+     */
+    private Map<String, String> createFromArgsTest(String... args) {
+        assert args.length % 2 == 0 : "Violation of: args.length is even";
+        Map<String, String> map = this.constructorTest();
+        for (int i = 0; i < args.length; i += 2) {
+            assert !map.hasKey(args[i]) : ""
+                    + "Violation of: the 'key' entries in args are unique";
+            map.add(args[i], args[i + 1]);
+        }
+        return map;
+    }
+
+    /**
+     *
+     * Creates and returns a {@code Map<String, String>} of the reference
+     * implementation type with the given entries.
+     *
+     * @param args
+     *            the (key, value) pairs for the map
+     * @return the constructed map
+     * @requires <pre>
+     * [args.length is even]  and
+     * [the 'key' entries in args are unique]
+     * </pre>
+     * @ensures createFromArgsRef = [pairs in args]
+     */
+    private Map<String, String> createFromArgsRef(String... args) {
+        assert args.length % 2 == 0 : "Violation of: args.length is even";
+        Map<String, String> map = this.constructorRef();
+        for (int i = 0; i < args.length; i += 2) {
+            assert !map.hasKey(args[i]) : ""
+                    + "Violation of: the 'key' entries in args are unique";
+            map.add(args[i], args[i + 1]);
+        }
+        return map;
+    }
+
+    // TODO - add test cases for remove, removeAny, value,
+    // hasKey, and size
+
+    /** Constructor test. */
+    @Test
+    public final void testEmptyConstructor() {
+        Map<String, String> m = this.constructorTest();
+        Map<String, String> mExpected = this.constructorRef();
+
+        assertEquals(m, mExpected);
+    }
+
+    /** Add boundary case. */
+    @Test
+    public final void testAddBoundary() {
+        Map<String, String> m = this.createFromArgsTest();
+        m.add("a", "b");
+        Map<String, String> mExpected = this.createFromArgsRef("a", "b");
+
+        assertEquals(m, mExpected);
+    }
+
+    /** Add routine case. */
+    @Test
+    public final void testAddRoutine() {
+        Map<String, String> m = this.createFromArgsTest("a", "b");
+        m.add("c", "d");
+        Map<String, String> mExpected = this.createFromArgsRef("a", "b", "c",
+                "d");
+
+        assertEquals(m, mExpected);
+    }
+
+    //good idea for add challenge case: same value diff key
+
+    /** remove boundary case. */
+    @Test
+    public final void testRemoveBoundary() {
+        Map<String, String> m = this.createFromArgsTest("a", "b");
+        m.remove("a");
+        Map<String, String> mExpected = this.createFromArgsRef();
+
+        assertEquals(m, mExpected);
+    }
+
+    /** remove routine case. */
+    @Test
+    public final void testRemoveRoutine() {
+        Map<String, String> m = this.createFromArgsTest("a", "b", "c", "d");
+        m.remove("c");
+        Map<String, String> mExpected = this.createFromArgsRef("a", "b");
+
+        assertEquals(m, mExpected);
+    }
+
+    /** removeAny boundary case. */
+    @Test
+    public final void testRemoveAnyBoundary() {
+        Map<String, String> m = this.createFromArgsTest("a", "b");
+        m.removeAny();
+        Map<String, String> mExpected = this.createFromArgsRef();
+
+        assertEquals(m, mExpected);
+    }
+
+    /** removeAny routine case. */
+    @Test
+    public final void testRemoveAnyRoutine() {
+        Map<String, String> m = this.createFromArgsTest("a", "b", "c", "d", "e",
+                "f");
+        Map<String, String> mExpected = this.createFromArgsRef("a", "b", "c",
+                "d", "e", "f");
+
+        Pair<String, String> mRemoved = m.removeAny();
+
+        assertTrue(mExpected.hasKey(mRemoved.key()));
+
+        Pair<String, String> mExpectedRemoved = mExpected
+                .remove(mRemoved.key());
+        assertEquals(mExpectedRemoved, mRemoved);
+
+        assertEquals(m.equals(mExpected), true);
+    }
+
+    /** hasKey boundary case. */
+    @Test
+    public final void testHasKeyBoundary() {
+        Map<String, String> m = this.createFromArgsTest("a", "b");
+
+        assertEquals(m.hasKey("c"), false);
+    }
+
+    /** hasKey routine case. */
+    @Test
+    public final void testHasKeyRoutine() {
+        Map<String, String> m = this.createFromArgsTest("a", "b", "c", "d");
+
+        assertEquals(m.hasKey("A"), false);
+    }
+
+    /** value routine case. */
+    @Test
+    public final void testValueRoutine() {
+        Map<String, String> m = this.createFromArgsTest("a", "b", "c", "d");
+
+        assertEquals(m.value("c"), "d");
+    }
+
+    /** value boundary case. */
+    @Test
+    public final void testValueBoundary() {
+        Map<String, String> m = this.createFromArgsTest("a", "b");
+
+        assertEquals(m.value("a"), "b");
+    }
+
+    /** value challenging case. */
+    @Test
+    public final void testValueChallenging() {
+        Map<String, String> m = this.createFromArgsTest("ab", "value1", "ba",
+                "value2");
+        assertEquals(m.value("ab"), "value1");
+        assertEquals(m.value("ba"), "value2");
+    }
+
+    /** value challenging case different keys same value. */
+    @Test
+    public final void testValueChallenging2() {
+        Map<String, String> m = this.createFromArgsTest("a", "b", "c", "b");
+        assertEquals(m.value("a"), "b");
+        assertEquals(m.value("c"), "b");
+    }
+
+    /** size boundary case. */
+    @Test
+    public final void testsizeBoundary() {
+        Map<String, String> m = this.createFromArgsTest();
+
+        assertEquals(m.size(), 0);
+    }
+
+    /** size routine case. */
+    @Test
+    public final void testsizeRoutine() {
+        Map<String, String> m = this.createFromArgsTest("a", "b", "c", "d");
+
+        assertEquals(m.size(), 2);
+    }
+
+}
